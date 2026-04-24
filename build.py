@@ -219,16 +219,94 @@ def get_good_news():
     return []
 
 def get_arsenal():
-    print("→ Arsenal (football-data.org)…")
-    # Arsenal team ID = 57 on football-data.org (free tier, no key for basic)
-    # Free tier allows 10 req/min without key, but requires key for some endpoints
-    # Fallback: use RSS
-    rss_url = "https://feeds.bbci.co.uk/sport/football/teams/arsenal/rss.xml"
-    items = parse_rss(fetch(rss_url), 6)
-    if items:
-        print(f"  ✓ Arsenal RSS: {len(items)} items")
-        return items
-    return []
+    print("→ Arsenal matches (football-data.org)…")
+    import os
+    api_key = os.environ.get("FOOTBALL_API_KEY", "")
+    if not api_key:
+        print("  ✗ No FOOTBALL_API_KEY set")
+        return {"past": [], "upcoming": []}
+
+    headers_str = f"X-Auth-Token: {api_key}"
+
+    def api_fetch(url):
+        try:
+            req = urllib.request.Request(url, headers={
+                "X-Auth-Token": api_key,
+                "User-Agent": "DailyFeedBot/1.0"
+            })
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except Exception as ex:
+            print(f"  ✗ API error: {ex}", file=sys.stderr)
+            return None
+
+    comp_names = {
+        "PL": "Premier League",
+        "CL": "Champions League",
+        "FA": "FA Cup",
+        "ELC": "EFL Cup",
+        "EC": "Europa League",
+    }
+
+    def fmt_match(m):
+        home = m["homeTeam"]["shortName"] or m["homeTeam"]["name"]
+        away = m["awayTeam"]["shortName"] or m["awayTeam"]["name"]
+        comp = comp_names.get(m["competition"]["code"], m["competition"]["name"])
+        date_raw = m["utcDate"]  # "2026-04-19T15:30:00Z"
+        try:
+            dt = datetime.strptime(date_raw, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+            dt_vienna = dt.astimezone(VIENNA)
+            date_str = dt_vienna.strftime("%-d. %b · %H:%M")
+        except:
+            date_str = date_raw[:10]
+
+        score = m.get("score", {})
+        ft = score.get("fullTime", {})
+        home_goals = ft.get("home")
+        away_goals = ft.get("away")
+
+        if home_goals is not None and away_goals is not None:
+            score_str = f"{home_goals}:{away_goals}"
+            # Determine result from Arsenal's perspective
+            arsenal_home = "Arsenal" in home
+            if home_goals == away_goals:
+                result = "draw"
+            elif (arsenal_home and home_goals > away_goals) or (not arsenal_home and away_goals > home_goals):
+                result = "win"
+            else:
+                result = "loss"
+        else:
+            score_str = None
+            result = "upcoming"
+
+        return {
+            "home": home,
+            "away": away,
+            "comp": comp,
+            "date": date_str,
+            "score": score_str,
+            "result": result,
+            "status": m.get("status", ""),
+        }
+
+    # Arsenal team ID = 57
+    past_data = api_fetch("https://api.football-data.org/v4/teams/57/matches?status=FINISHED&limit=3")
+    upcoming_data = api_fetch("https://api.football-data.org/v4/teams/57/matches?status=SCHEDULED,TIMED&limit=3")
+
+    past = []
+    if past_data and "matches" in past_data:
+        # Sort by date descending, take last 3
+        matches = sorted(past_data["matches"], key=lambda x: x["utcDate"], reverse=True)
+        past = [fmt_match(m) for m in matches[:3]]
+        print(f"  ✓ Past matches: {len(past)}")
+
+    upcoming = []
+    if upcoming_data and "matches" in upcoming_data:
+        matches = sorted(upcoming_data["matches"], key=lambda x: x["utcDate"])
+        upcoming = [fmt_match(m) for m in matches[:3]]
+        print(f"  ✓ Upcoming matches: {len(upcoming)}")
+
+    return {"past": past, "upcoming": upcoming}
 
 def get_austria_news():
     print("→ Austria Top News…")
@@ -324,18 +402,46 @@ def news_list_html(items, max_items=5):
       </a>''')
     return "".join(out)
 
-def arsenal_matches_html(items):
-    """Show first 3 arsenal items as match-style cards."""
-    if not items:
+def arsenal_matches_html(arsenal):
+    """Render past and upcoming Arsenal matches from football-data.org."""
+    if not arsenal or (not arsenal.get("past") and not arsenal.get("upcoming")):
         return '<div class="empty">Keine Spieldaten verfügbar</div>'
+
+    result_colors = {"win": "#2d6a4f", "loss": "#c0392b", "draw": "#64748b"}
+    result_labels = {"win": "W", "loss": "L", "draw": "D"}
     out = []
-    for item in items[:3]:
-        out.append(f'''
+
+    # Section header: past
+    if arsenal.get("past"):
+        out.append('<div class="match-section-label">Letzte Spiele</div>')
+        for m in arsenal["past"]:
+            col = result_colors.get(m["result"], "#111")
+            label = result_labels.get(m["result"], "")
+            out.append(f'''
       <div class="match-block">
-        <div class="match-comp">{e(item.get("source","Arsenal"))}</div>
-        <div class="news-title" style="padding:0;font-size:14px">{e(item["title"])}</div>
-        {"<div class='match-note'>" + e(item.get("desc","")[:120]) + "</div>" if item.get("desc") else ""}
+        <div class="match-comp">{e(m["comp"])}</div>
+        <div class="match-line">
+          <span class="match-team">{e(m["home"])}</span>
+          <span class="score-box" style="background:{col}">{e(m["score"])} <span class="score-label">{label}</span></span>
+          <span class="match-team right">{e(m["away"])}</span>
+        </div>
+        <div class="match-date">{e(m["date"])}</div>
       </div>''')
+
+    # Section header: upcoming
+    if arsenal.get("upcoming"):
+        out.append('<div class="match-section-label" style="margin-top:4px">Nächste Spiele</div>')
+        for m in arsenal["upcoming"]:
+            out.append(f'''
+      <div class="match-block">
+        <div class="match-comp">{e(m["comp"])}</div>
+        <div class="match-line">
+          <span class="match-team">{e(m["home"])}</span>
+          <span class="score-box upcoming">{e(m["date"])}</span>
+          <span class="match-team right">{e(m["away"])}</span>
+        </div>
+      </div>''')
+
     return "".join(out)
 
 def weather_html(w):
@@ -377,8 +483,13 @@ def build_tldr(top_news, arsenal, sinner, weather, good_news):
         items.append(f'<strong>Welt:</strong> {top_news[0]["title"][:80]}')
     if top_news and len(top_news) > 1:
         items.append(f'<strong>+</strong> {top_news[1]["title"][:80]}')
-    if arsenal:
-        items.append(f'<strong>Arsenal:</strong> {arsenal[0]["title"][:80]}')
+    # Arsenal: show next match if available, else last result
+    if arsenal and arsenal.get("upcoming"):
+        m = arsenal["upcoming"][0]
+        items.append(f'<strong>Arsenal:</strong> {m["home"]} vs {m["away"]} · {m["date"]} · {m["comp"]}')
+    elif arsenal and arsenal.get("past"):
+        m = arsenal["past"][0]
+        items.append(f'<strong>Arsenal:</strong> {m["home"]} {m["score"]} {m["away"]}')
     if sinner:
         items.append(f'<strong>Sinner:</strong> {sinner[0]["title"][:80]}')
     if good_news:
@@ -496,9 +607,17 @@ body{{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;fon
 .fday-icon{{font-size:18px}}
 .fday-temp{{font-size:14px;font-weight:500;margin-top:2px}}
 .fday-rain{{font-family:'DM Mono',monospace;font-size:9px;color:#60a5fa}}
-.match-block{{padding:12px 14px;border-bottom:1px solid var(--line)}}
+.match-section-label{{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;padding:8px 14px 4px;border-bottom:1px solid var(--line)}}
+.match-block{{padding:10px 14px;border-bottom:1px solid var(--line)}}
 .match-block:last-child{{border-bottom:none}}
-.match-comp{{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}}
+.match-comp{{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}}
+.match-line{{display:flex;align-items:center;justify-content:space-between;gap:8px}}
+.match-team{{font-size:13px;font-weight:500;flex:1}}
+.match-team.right{{text-align:right}}
+.score-box{{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;padding:3px 9px;border-radius:2px;white-space:nowrap;color:#fff;background:#111;display:flex;align-items:center;gap:5px}}
+.score-box.upcoming{{background:var(--bg)!important;color:var(--muted)!important;border:1px solid var(--line);font-size:11px}}
+.score-label{{font-size:9px;opacity:.8}}
+.match-date{{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px}}
 .match-note{{font-size:12px;color:#666;margin-top:4px;font-style:italic}}
 .fact-body{{padding:16px 14px;background:#1a1a1a}}
 .fact-eyebrow{{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:10px}}
