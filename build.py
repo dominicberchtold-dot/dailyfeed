@@ -230,28 +230,22 @@ def get_arsenal():
         return items
     return []
 
-def get_arsenal_news():
-    print("→ Arsenal News…")
+def get_austria_news():
+    print("→ Austria Top News…")
     feeds = [
-        ("https://feeds.bbci.co.uk/sport/football/teams/arsenal/rss.xml", "BBC Sport"),
-        ("https://www.skysports.com/rss/12040", "Sky Sports"),
-        ("https://arseblog.com/feed/", "arseblog"),
+        ("https://rss.orf.at/news.xml", "ORF", "https://orf.at"),
+        ("https://www.derstandard.at/rss", "Der Standard", "https://www.derstandard.at"),
+        ("https://www.diepresse.com/rss/home", "Die Presse", "https://www.diepresse.com"),
     ]
-    all_items = []
-    for url, source in feeds:
-        items = parse_rss(fetch(url), 3)
-        for item in items:
-            item["source"] = source
-            # Ensure link is absolute
-            if item.get("link") and not item["link"].startswith("http"):
-                item["link"] = "https://arseblog.com" + item["link"]
-            if not item.get("link"):
-                item["link"] = "https://arseblog.com" if source == "arseblog" else "https://www.bbc.com/sport/football/arsenal"
-        all_items.extend(items)
-        if len(all_items) >= 4:
-            break
-    print(f"  ✓ Arsenal news: {len(all_items[:4])} items")
-    return all_items[:4]
+    for url, source, fallback in feeds:
+        items = parse_rss(fetch(url), 5)
+        if items:
+            for item in items:
+                item["source"] = source
+                ensure_link(item, fallback)
+            print(f"  ✓ {source}: {len(items)} items")
+            return items
+    return []
 
 def get_sinner():
     print("→ Sinner (Google News RSS)…")
@@ -395,7 +389,7 @@ def build_tldr(top_news, arsenal, sinner, weather, good_news):
         items.append(f'<strong>+</strong> {good_news[1]["title"][:80]}')
     return items[:8]
 
-def build_html(weather, top_news, good_news, arsenal, arsenal_news, sinner, tennis, fact):
+def build_html(weather, top_news, good_news, arsenal, austria_news, sinner, tennis, fact):
     date_str = NOW.strftime("%-d. %B %Y")
     weekday = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"][NOW.weekday()]
     time_str = NOW.strftime("%H:%M")
@@ -568,10 +562,10 @@ body{{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;fon
     </div>
     <div class="card">
       <div class="card-header">
-        <span class="card-label arsenal">Arsenal News</span>
-        <span class="card-more">arseblog · BBC Sport</span>
+        <span class="card-label red">🇦🇹 Österreich · Top 5</span>
+        <span class="card-more">ORF · Der Standard</span>
       </div>
-      {news_list_html(arsenal_news, 4)}
+      {news_list_html(austria_news, 5)}
     </div>
   </div>
 
@@ -624,12 +618,12 @@ if __name__ == "__main__":
     top_news     = get_top_news()
     good_news    = get_good_news()
     arsenal      = get_arsenal()
-    arsenal_news = get_arsenal_news()
+    austria_news = get_austria_news()
     sinner       = get_sinner()
     tennis       = get_tennis()
     fact         = get_fact()
 
-    html_out = build_html(weather, top_news, good_news, arsenal, arsenal_news, sinner, tennis, fact)
+    html_out = build_html(weather, top_news, good_news, arsenal, austria_news, sinner, tennis, fact)
 
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_out)
