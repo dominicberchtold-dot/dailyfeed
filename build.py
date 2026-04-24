@@ -178,18 +178,27 @@ def get_weather():
         "forecast": forecast,
     }
 
+def ensure_link(item, fallback):
+    """Make sure item has an absolute link."""
+    link = item.get("link", "")
+    if link and link.startswith("http"):
+        return item
+    item["link"] = fallback
+    return item
+
 def get_top_news():
     print("→ Top News (BBC World)…")
     feeds = [
-        ("https://feeds.bbci.co.uk/news/world/rss.xml", "BBC World"),
-        ("https://rss.nytimes.com/services/xml/rss/nyt/World.xml", "NYT World"),
-        ("https://www.theguardian.com/world/rss", "The Guardian"),
+        ("https://feeds.bbci.co.uk/news/world/rss.xml", "BBC World", "https://www.bbc.com/news/world"),
+        ("https://rss.nytimes.com/services/xml/rss/nyt/World.xml", "NYT World", "https://www.nytimes.com/section/world"),
+        ("https://www.theguardian.com/world/rss", "The Guardian", "https://www.theguardian.com/world"),
     ]
-    for url, source in feeds:
+    for url, source, fallback in feeds:
         items = parse_rss(fetch(url), 5)
         if items:
             for item in items:
                 item["source"] = source
+                ensure_link(item, fallback)
             print(f"  ✓ {source}: {len(items)} items")
             return items
     return []
@@ -197,12 +206,14 @@ def get_top_news():
 def get_good_news():
     print("→ Good News (Positive.news)…")
     feeds = [
-        "https://www.positive.news/feed/",
-        "https://www.goodnewsnetwork.org/feed/",
+        ("https://www.positive.news/feed/", "https://www.positive.news"),
+        ("https://www.goodnewsnetwork.org/feed/", "https://www.goodnewsnetwork.org"),
     ]
-    for url in feeds:
+    for url, fallback in feeds:
         items = parse_rss(fetch(url), 3)
         if items:
+            for item in items:
+                ensure_link(item, fallback)
             print(f"  ✓ {url[:40]}: {len(items)} items")
             return items
     return []
@@ -220,16 +231,22 @@ def get_arsenal():
     return []
 
 def get_arsenal_news():
-    print("→ Arsenal News (arseblog)…")
+    print("→ Arsenal News…")
     feeds = [
-        ("https://arseblog.com/feed/", "arseblog"),
         ("https://feeds.bbci.co.uk/sport/football/teams/arsenal/rss.xml", "BBC Sport"),
+        ("https://www.skysports.com/rss/12040", "Sky Sports"),
+        ("https://arseblog.com/feed/", "arseblog"),
     ]
     all_items = []
     for url, source in feeds:
         items = parse_rss(fetch(url), 3)
         for item in items:
             item["source"] = source
+            # Ensure link is absolute
+            if item.get("link") and not item["link"].startswith("http"):
+                item["link"] = "https://arseblog.com" + item["link"]
+            if not item.get("link"):
+                item["link"] = "https://arseblog.com" if source == "arseblog" else "https://www.bbc.com/sport/football/arsenal"
         all_items.extend(items)
         if len(all_items) >= 4:
             break
