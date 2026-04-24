@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Feed · Dominic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#111;--bg:#f5f4ef;--white:#fefefe;--muted:#888;--line:#dddbd4;--red:#c0392b;--arsenal:#EF0107;--good:#2d6a4f;--tennis:#1a6634}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh}
+.masthead{background:var(--white);border-bottom:2px solid var(--ink);padding:0 32px;display:flex;justify-content:space-between;align-items:stretch}
+.logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;letter-spacing:-.02em;padding:14px 0;display:flex;align-items:center;gap:10px}
+.logo-dot{color:var(--red)}
+.nav{display:flex;align-items:stretch}
+.nav-item{padding:0 16px;display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-left:1px solid var(--line)}
+.masthead-right{display:flex;align-items:center;padding:0 0 0 24px;border-left:1px solid var(--line)}
+.date-display{text-align:right;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:1.6}
+.date-display strong{display:block;color:var(--ink);font-size:12px}
+.tldr-bar{background:#1a1a1a;color:#fff;padding:14px 32px;display:grid;grid-template-columns:auto 1fr 1fr;gap:0 32px;align-items:start;border-bottom:1px solid #333}
+.tldr-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);padding-top:2px;white-space:nowrap;line-height:1.8}
+.tldr-grid{display:grid;grid-template-rows:repeat(2,auto);gap:6px}
+.tldr-item{font-size:12px;line-height:1.4;color:#ccc;padding-left:10px;border-left:1px solid #333}
+.tldr-item strong{color:#fff;font-weight:500}
+.main{max-width:1280px;margin:0 auto;padding:28px 32px 60px;display:grid;grid-template-columns:1fr 1fr 340px;gap:24px;align-items:start}
+.card{background:var(--white);border:1px solid var(--line)}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.card-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.card-label.red{color:var(--red)}.card-label.arsenal{color:var(--arsenal)}.card-label.good{color:var(--good)}.card-label.tennis{color:var(--tennis)}
+.card-more{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)}
+.news-item{display:grid;grid-template-columns:28px 1fr;gap:0 10px;padding:11px 14px;border-bottom:1px solid var(--line);align-items:start;text-decoration:none;color:inherit;transition:background .12s}
+.news-item:last-child{border-bottom:none}
+.news-item:hover{background:var(--bg)}
+.news-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);padding-top:3px;text-align:right}
+.news-title{font-family:'Playfair Display',serif;font-size:15px;line-height:1.35;font-weight:400;margin-bottom:3px}
+.news-meta{font-size:11px;color:var(--muted);display:flex;gap:8px}
+.news-source{font-weight:500;color:#666}
+.news-desc{font-size:12px;color:#666;line-height:1.4;margin-top:3px}
+.good-item{display:block;padding:12px 14px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;transition:background .12s}
+.good-item:last-child{border-bottom:none}
+.good-item:hover{background:var(--bg)}
+.good-title{font-family:'Playfair Display',serif;font-size:14px;line-height:1.3;margin-bottom:3px}
+.good-desc{font-size:12px;color:#666;line-height:1.4}
+.weather-body{padding:16px 14px 12px}
+.weather-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.temp-hero{font-family:'Playfair Display',serif;font-size:56px;font-weight:400;line-height:1;letter-spacing:-.03em}
+.weather-icon{font-size:42px;line-height:1}
+.weather-cond{font-size:13px;color:var(--muted);margin-top:4px}
+.weather-hilo{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px}
+.gear-box{margin:10px 0;padding:10px 12px;border-left:3px solid;background:var(--bg);font-size:13px;font-style:italic;line-height:1.4}
+.rain-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+.rain-bars{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;height:52px;align-items:flex-end;margin:8px 0 4px}
+.rain-bar-wrap{display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:3px}
+.rain-bar{width:100%;border-radius:1px;min-height:2px}
+.rain-bar-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted)}
+.forecast-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.fday{text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:2px}
+.fday-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.fday-icon{font-size:18px}
+.fday-temp{font-size:14px;font-weight:500;margin-top:2px}
+.fday-rain{font-family:'DM Mono',monospace;font-size:9px;color:#60a5fa}
+.match-block{padding:12px 14px;border-bottom:1px solid var(--line)}
+.match-block:last-child{border-bottom:none}
+.match-comp{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.match-note{font-size:12px;color:#666;margin-top:4px;font-style:italic}
+.fact-body{padding:16px 14px;background:#1a1a1a}
+.fact-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.fact-text{font-family:'Playfair Display',serif;font-size:15px;font-style:italic;line-height:1.5;color:#eee}
+.col-left,.col-mid,.col-right{display:flex;flex-direction:column;gap:20px}
+.empty{padding:12px 14px;font-size:12px;color:var(--muted);font-style:italic}
+.refresh-note{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:12px 0 0;border-top:1px solid var(--line);font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);gap:20px}
+@media(max-width:1024px){.main{grid-template-columns:1fr 1fr}.col-right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}.tldr-bar{grid-template-columns:auto 1fr}}
+@media(max-width:680px){.main{grid-template-columns:1fr;padding:16px}.masthead{padding:0 16px}.tldr-bar{display:none}.col-right{grid-template-columns:1fr}.nav{display:none}}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="logo"><span class="logo-dot">●</span> Daily Feed</div>
+  <nav class="nav">
+    <span class="nav-item">TL;DR</span>
+    <span class="nav-item">Wetter</span>
+    <span class="nav-item">Arsenal</span>
+    <span class="nav-item">Tennis</span>
+    <span class="nav-item">Good News</span>
+  </nav>
+  <div class="masthead-right">
+    <div class="date-display">
+      <strong>Freitag, 24. April 2026</strong>
+      Wien · Stand 15:58
+    </div>
+  </div>
+</header>
+
+<div class="tldr-bar">
+  <div class="tldr-label">TL;DR —<br>Auf einen<br>Blick</div>
+  <div class="tldr-grid"><div class="tldr-item"><strong>Wien 23°</strong> Überwiegend klar — Kein Regen erwartet — Jacke + Schirm daheim lassen.</div><div class="tldr-item"><strong>Welt:</strong> Nato says 'no provision' to expel members after report US could seek to suspend </div><div class="tldr-item"><strong>+</strong> No 10 says Falklands sovereignty rests with UK after report of US 'review'</div><div class="tldr-item"><strong>Arsenal:</strong> Who will win the title? Reporters, fans and pundits make their predictions</div></div>
+  <div class="tldr-grid"><div class="tldr-item"><strong>Sinner:</strong> Flashback: Sinner's first ATP Tour win & the impression he left... not just on c</div><div class="tldr-item"><strong>Good News:</strong> What went right this week: the good news that matters</div><div class="tldr-item"><strong>+</strong> Key suspect in notorious Tadamon massacre during Syria civil war arrested</div><div class="tldr-item"><strong>+</strong> The surprise pushback against America’s junk food culture</div></div>
+</div>
+
+<main class="main">
+  <div class="col-left">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label red">Top News · Welt · Heute</span>
+        <span class="card-more">BBC · Guardian · NYT</span>
+      </div>
+      
+      <a class="news-item" href="https://www.bbc.com/news/articles/cz78x703lrvo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+        <div class="news-num">01</div>
+        <div>
+          <div class="news-title">Nato says &#x27;no provision&#x27; to expel members after report US could seek to suspend Spain</div>
+          <div class="news-meta">
+            <span class="news-source">BBC World</span>
+            <span>vor 3h</span>
+          </div>
+          <div class='news-desc'>An internal Pentagon email reportedly outlines options to punish allies over a perceived lack of support for Iran war.</div>
+        </div>
+      </a>
+      <a class="news-item" href="https://www.bbc.com/news/articles/cde51y0zgjyo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+        <div class="news-num">02</div>
+        <div>
+          <div class="news-title">No 10 says Falklands sovereignty rests with UK after report of US &#x27;review&#x27;</div>
+          <div class="news-meta">
+            <span class="news-source">BBC World</span>
+            <span>vor 1h</span>
+          </div>
+          <div class='news-desc'>An internal Pentagon document reportedly raised the prospect of a change in position in retaliation for the UK not joining the Iran war.</div>
+        </div>
+      </a>
+      <a class="news-item" href="https://www.bbc.com/news/articles/cvglxgq1p2jo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+        <div class="news-num">03</div>
+        <div>
+          <div class="news-title">Key suspect in notorious Tadamon massacre during Syria civil war arrested</div>
+          <div class="news-meta">
+            <span class="news-source">BBC World</span>
+            <span>vor 3h</span>
+          </div>
+          <div class='news-desc'>Amjad Youssef was wanted over the mass killing of blindfolded civilians in April 2013 in the district of Damascus.</div>
+        </div>
+      </a>
+      <a class="news-item" href="https://www.bbc.com/news/articles/cp38e5jgxqyo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+        <div class="news-num">04</div>
+        <div>
+          <div class="news-title">South Africa&#x27;s top envoy to Ghana summoned over attacks on foreigners</div>
+          <div class="news-meta">
+            <span class="news-source">BBC World</span>
+            <span>vor 1h</span>
+          </div>
+          <div class='news-desc'>A Ghanaian national was confronted by South Africans in a viral clip and questioned about his immigration status.</div>
+        </div>
+      </a>
+      <a class="news-item" href="https://www.bbc.com/news/articles/c0mjederzwdo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+        <div class="news-num">05</div>
+        <div>
+          <div class="news-title">Poisoning suspected in deaths of 18 wolves in Italian national park</div>
+          <div class="news-meta">
+            <span class="news-source">BBC World</span>
+            <span>vor 2h</span>
+          </div>
+          <div class='news-desc'>After the carcasses of 10 wolves were found last week, another eight have been found in recent days.</div>
+        </div>
+      </a>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label good">Good News · Diese Woche</span>
+        <span class="card-more">positive.news</span>
+      </div>
+      <a class="good-item" href="https://www.positive.news/society/good-news-stories-from-week-17-of-2026/" target="_blank" rel="noopener">
+        <div class="good-title">🌿 What went right this week: the good news that matters</div>
+        <div class='good-desc'>Eco ‘champions’ were honoured, the world hit a major energy milestone, and science beat a type of blindness, plus more The post What went right this week: the g</div>
+      </a><a class="good-item" href="https://www.positive.news/society/the-unexpected-pushback-against-americas-junk-food-culture/" target="_blank" rel="noopener">
+        <div class="good-title">⚡ The surprise pushback against America’s junk food culture</div>
+        <div class='good-desc'>The US government has unexpectedly urged Americans to ditch ultra-processed food. Its new dietary guidelines have some merit The post The surprise pushback agai</div>
+      </a><a class="good-item" href="https://www.positive.news/society/why-this-weekends-london-marathon-will-impact-more-than-just-knees/" target="_blank" rel="noopener">
+        <div class="good-title">🚀 Why this weekend’s London Marathon will impact more than just knees</div>
+        <div class='good-desc'>Sunday’s race will provide a major boost to charities – including one dedicated to helping children with cancer The post Why this weekend’s London Marathon will</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="col-mid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label arsenal">⚽ Arsenal London</span>
+        <span class="card-more">BBC Sport</span>
+      </div>
+      
+      <div class="match-block">
+        <div class="match-comp">Arsenal</div>
+        <div class="news-title" style="padding:0;font-size:14px">Who will win the title? Reporters, fans and pundits make their predictions</div>
+        <div class='match-note'>Will it be Manchester City or Arsenal for the Premier League title? BBC Sport gets pundits, reporters and fans to predic</div>
+      </div>
+      <div class="match-block">
+        <div class="match-comp">Arsenal</div>
+        <div class="news-title" style="padding:0;font-size:14px">🎧 Arsenal Daily: Do Arsenal need a mindset change?</div>
+        <div class='match-note'>Today&#x27;s news and views on the Gunners in two minutes.</div>
+      </div>
+      <div class="match-block">
+        <div class="match-comp">Arsenal</div>
+        <div class="news-title" style="padding:0;font-size:14px">&#x27;Arsenal have been trying to nick 1-0 wins&#x27; - do they need mindset change?</div>
+        <div class='match-note'>Arsenal and Manchester City are locked on points and goal difference heading into the final five games of the Premier Le</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label arsenal">Arsenal News</span>
+        <span class="card-more">arseblog · BBC Sport</span>
+      </div>
+      
+      <a class="news-item" href="https://arseblog.com/2026/04/just-win-arsenal-but-please-also-win-big/" target="_blank" rel="noopener">
+        <div class="news-num">01</div>
+        <div>
+          <div class="news-title">Just win Arsenal, but please also win big</div>
+          <div class="news-meta">
+            <span class="news-source">arseblog</span>
+            <span>vor 6h</span>
+          </div>
+          <div class='news-desc'>Good morning, everyone! It’s an early tee time for Andrew this morning, so I’m filling in for the day. Well, I’m trying to – my daughter’s trying to help and, to be completely honest with you, it’s no…</div>
+        </div>
+      </a>
+      <a class="news-item" href="https://arseblog.com/2026/04/episode-873-its-still-good/" target="_blank" rel="noopener">
+        <div class="news-num">02</div>
+        <div>
+          <div class="news-title">Episode 873 – It’s still good</div>
+          <div class="news-meta">
+            <span class="news-source">arseblog</span>
+            <span>gestern</span>
+          </div>
+          <div class='news-desc'>Welcome to another episode of the Arsecast – the Arsenal podcast. In this episode I’m joined by Ryan Hunn to shoot the Arsenal breeze after what has been a difficult week, and one in which we find our…</div>
+        </div>
+      </a>
+      <a class="news-item" href="https://arseblog.com/2026/04/the-one-simple-trick-arsenal-need-to-make-their-attack-better/" target="_blank" rel="noopener">
+        <div class="news-num">03</div>
+        <div>
+          <div class="news-title">The one simple trick Arsenal need to make their attack better</div>
+          <div class="news-meta">
+            <span class="news-source">arseblog</span>
+            <span>gestern</span>
+          </div>
+          <div class='news-desc'>Morning all. As I am not a total masochist, I did not spend any time watching football last night. I know there was other football, but in particular the Man City game. They won 1-0, they’re now top, …</div>
+        </div>
+      </a>
+      <a class="news-item" href="https://www.bbc.com/sport/football/articles/cn0w49y475wo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+        <div class="news-num">04</div>
+        <div>
+          <div class="news-title">Who will win the title? Reporters, fans and pundits make their predictions</div>
+          <div class="news-meta">
+            <span class="news-source">BBC Sport</span>
+            <span>vor 8h</span>
+          </div>
+          <div class='news-desc'>Will it be Manchester City or Arsenal for the Premier League title? BBC Sport gets pundits, reporters and fans to predict each of their remaining fixtures - and who will win the league.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="col-right">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label">🌤 Wetter · Wien</span>
+        <span class="card-more">Open-Meteo · ECMWF</span>
+      </div>
+      <div class="weather-body">
+      <div class="weather-row">
+        <div>
+          <div class="temp-hero">23°</div>
+          <div class="weather-cond">Überwiegend klar</div>
+          <div class="weather-hilo">↑23° ↓10° · 14 km/h · 16%</div>
+        </div>
+        <div class="weather-icon">🌤</div>
+      </div>
+      <div class="gear-box" style="border-color:#2d6a4f">☀ Kein Regen erwartet — Jacke + Schirm daheim lassen.</div>
+      <div class="rain-label">Regen · nächste 8h</div>
+      <div class="rain-bars"><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">15h</div></div><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">16h</div></div><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">17h</div></div><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">18h</div></div><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">19h</div></div><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">20h</div></div><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">21h</div></div><div class="rain-bar-wrap"><div class="rain-bar" style="height:4%;background:#e2e8f0"></div><div class="rain-bar-label">22h</div></div></div>
+      <div class="forecast-row"><div class="fday"><div class="fday-name">Sa</div><div class="fday-icon">☁️</div><div class="fday-temp">24°</div><div class="fday-rain">0%</div></div><div class="fday"><div class="fday-name">So</div><div class="fday-icon">☁️</div><div class="fday-temp">17°</div><div class="fday-rain">0%</div></div><div class="fday"><div class="fday-name">Mo</div><div class="fday-icon">☁️</div><div class="fday-temp">18°</div><div class="fday-rain">0%</div></div><div class="fday"><div class="fday-name">Di</div><div class="fday-icon">☁️</div><div class="fday-temp">19°</div><div class="fday-rain">8%</div></div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label tennis">🎾 Jannik Sinner</span>
+        <span class="card-more">Google News</span>
+      </div>
+      <a class="news-item" href="https://news.google.com/rss/articles/CBMiggFBVV95cUxPbmxJTGJHc2ozVGp0a3pBbXhrMzVLQm1hSWYxb09iVHBfVHVBZUdEeDItbXctV0RnQkx1NHI3aHBpWENWN0Q3VVFjcHpTVk9PeWNYYXV1WHNrUDBqQzB5NmYwM2doc3dYZkpVSkNIaGQyNzduQVdla2ZSYjhxeXg4YmNB?oc=5" target="_blank" rel="noopener">
+          <div class="news-num">→</div>
+          <div>
+            <div class="news-title" style="font-size:13px">Flashback: Sinner&#x27;s first ATP Tour win &amp; the impression he left... not just on court - ATP Tour</div>
+            <div class="news-meta"><span class="news-source">Google News</span> <span>vor 8h</span></div>
+          </div>
+        </a><a class="news-item" href="https://news.google.com/rss/articles/CBMikwFBVV95cUxQWWdqLU4zakVlNUpfR2lqOGp2dkYzZjNjd2VLUEN0YmU4cWJyUHhVVElERS1nbm1fempPbUFTZm9KT2dIdHlWc283QWhIV0g5SzIzdFFLc2wyd1JISnZUd0VaWk5aWm5EbHpFUEFSb29heE51bWU0eTA2LUNrUmJlNF9uZTk5bnYyNDdhRlFUTHg0STA?oc=5" target="_blank" rel="noopener">
+          <div class="news-num">→</div>
+          <div>
+            <div class="news-title" style="font-size:13px">ATP Madrid Day 3 Predictions Including Jannik Sinner vs Benjamin Bonzi - Last Word On Sports</div>
+            <div class="news-meta"><span class="news-source">Google News</span> <span>vor 9h</span></div>
+          </div>
+        </a><a class="news-item" href="https://news.google.com/rss/articles/CBMizAFBVV95cUxQU3B2T2d2SmFjS1VVdGJlVTRlVmJ6ZjEzWFhUdkozUFdQbmtqck1NY0kxTkk1UlFaNEF5bTdReXIwVnd0X0QzRnJ1RUVYWkstME5wb3FLSzUyOVZUcmJXTHViZkVDOXpwZjlyZlBoTjlCN0J1Q2FBaUNMVjBQLWFnT3Z1cE8zbVdjbl9RZ0ZzdlZUTnNHeEY3akRZdnJGbTZhcEN3eTNHV2QxSFhxM25FdXFfMjdfSGVXbDF2ZXNUSXZPbTdpM1lYTjR4Z0w?oc=5" target="_blank" rel="noopener">
+          <div class="news-num">→</div>
+          <div>
+            <div class="news-title" style="font-size:13px">Depression candy and death stares: inside the secret world of the tennis locker room - The Guardian</div>
+            <div class="news-meta"><span class="news-source">Google News</span> <span>22. Apr</span></div>
+          </div>
+        </a><a class="news-item" href="https://news.google.com/rss/articles/CBMinAFBVV95cUxQX2k1UzdYM1pTcHRQYVdyQVZQOFBXeG1lNTREUUdUVHRHb2o0UmxpYTJZdFE5djhqZVByRXhoU0F2VC1MUkR1SkhObk5uZlBoUktPUTFJRjd2OC1aOWlJUFM0RmpKRTAwb25VWXotZnhkYmhzWmtMbnRaVXR1TGljTzFST0J3VVpqX1ZsU0tWN0V6SHRLQ3hwaU9UQWE?oc=5" target="_blank" rel="noopener">
+          <div class="news-num">→</div>
+          <div>
+            <div class="news-title" style="font-size:13px">Why are Nadal and Sinner playing tennis against Bellingham at the Bernabeu? - Tennis365</div>
+            <div class="news-meta"><span class="news-source">Google News</span> <span>vor 14h</span></div>
+          </div>
+        </a>
+      <div class="card-header" style="border-top:1px solid var(--line);border-bottom:none;margin-top:4px">
+        <span class="card-label tennis">ATP · Turniere</span>
+      </div>
+      <a class="good-item" href="https://news.google.com/rss/articles/CBMif0FVX3lxTE1wOGhpQlhLcVdnV3hKeDhvaGRTNElaN09zdHVua1VNNXNHQkFOUlJoWmwwcjJKbFJpZDRkZzVvbjlXWEFhY09BLVBaRHRLSV9NN29Ib0xHeFlMX0hBdmhDZUNQN1NqMEVPY1VpUTFCekZZNXM0cnd6aXVPNWN5N0E?oc=5" target="_blank" rel="noopener">
+          <div class="good-title" style="font-size:13px">ATP Masters 1000: Tournaments, Records, Stats | ATP Tour | Tennis - ATP Tour</div>
+          <div class="good-desc">20. Apr</div>
+        </a><a class="good-item" href="https://news.google.com/rss/articles/CBMi0gFBVV95cUxOUERSTnI4OU04Ql9JaFpfaFQtYjNLZTduMlQtbWFYWldDRndMd1pld3gwYXBGY1h3SmJmcFNCbWV2eV9HbWZrZTBFSXBtMFMwN1NyRC0wYkQzZHZUaVhtclRPRFQ4WG1oR1puU0dCcDlBeVhXLTQ0RnVPbWEzV3FnTy1UTC1waGpNTWFhYlJBZER3SUlBTWYydFdYb2M1S21pMGlEZmZsTDF1S25ZNVNHOUNnNmdseWNIVXdPdERtUVFUTm9rNVBDd1pSODA0eVdZT1E?oc=5" target="_blank" rel="noopener">
+          <div class="good-title" style="font-size:13px">Tennis 2026 schedule, Grand Slam dates and tournament calendar for ATP and WTA Tours - Sky Sports</div>
+          <div class="good-desc">20. Apr</div>
+        </a><a class="good-item" href="https://news.google.com/rss/articles/CBMicEFVX3lxTE5aUGpPdXhHQm1EQzI0YlkxUXFCQWU5b2JELXNEVElWZUY5dE81RUdZdmxPcTlwazQ5amRyV1NlZTVPaVNvVmdvemE4V3FFR003MnRfYmYyRmZ5RzZldmNjXzNyaDF3ZWJ0c1liZUdfU1c?oc=5" target="_blank" rel="noopener">
+          <div class="good-title" style="font-size:13px">How to watch Madrid tennis - ATP Tour</div>
+          <div class="good-desc">21. Apr</div>
+        </a>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label red">◆ Fact des Tages</span>
+      </div>
+      <div class="fact-body">
+        <div class="fact-eyebrow">Did you know</div>
+        <div class="fact-text">On a Canadian two dollar bill, the flag flying over the Parliament buildings is an American flag.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="refresh-note">
+    <span>Generiert: Freitag, 24. April 2026 · 15:58 Uhr · Open-Meteo, BBC, Guardian, arseblog, ATP, Positive.news</span>
+    <span>Aktualisiert täglich automatisch um 7:00 Uhr</span>
+  </div>
+</main>
+</body>
+</html>
