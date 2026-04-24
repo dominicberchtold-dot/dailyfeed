@@ -60,9 +60,17 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
 .fday-icon{font-size:18px}
 .fday-temp{font-size:14px;font-weight:500;margin-top:2px}
 .fday-rain{font-family:'DM Mono',monospace;font-size:9px;color:#60a5fa}
-.match-block{padding:12px 14px;border-bottom:1px solid var(--line)}
+.match-section-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;padding:8px 14px 4px;border-bottom:1px solid var(--line)}
+.match-block{padding:10px 14px;border-bottom:1px solid var(--line)}
 .match-block:last-child{border-bottom:none}
-.match-comp{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.match-comp{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.match-line{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.match-team{font-size:13px;font-weight:500;flex:1}
+.match-team.right{text-align:right}
+.score-box{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;padding:3px 9px;border-radius:2px;white-space:nowrap;color:#fff;background:#111;display:flex;align-items:center;gap:5px}
+.score-box.upcoming{background:var(--bg)!important;color:var(--muted)!important;border:1px solid var(--line);font-size:11px}
+.score-label{font-size:9px;opacity:.8}
+.match-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px}
 .match-note{font-size:12px;color:#666;margin-top:4px;font-style:italic}
 .fact-body{padding:16px 14px;background:#1a1a1a}
 .fact-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
@@ -87,15 +95,15 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
   <div class="masthead-right">
     <div class="date-display">
       <strong>Freitag, 24. April 2026</strong>
-      Wien · Stand 16:07
+      Wien · Stand 16:15
     </div>
   </div>
 </header>
 
 <div class="tldr-bar">
   <div class="tldr-label">TL;DR —<br>Auf einen<br>Blick</div>
-  <div class="tldr-grid"><div class="tldr-item"><strong>Wien 23°</strong> Klar — Kein Regen erwartet — Jacke + Schirm daheim lassen.</div><div class="tldr-item"><strong>Welt:</strong> Nato says 'no provision' to expel members after report US could seek to suspend </div><div class="tldr-item"><strong>+</strong> No 10 says Falklands sovereignty rests with UK after report of US 'review'</div><div class="tldr-item"><strong>Arsenal:</strong> Who will win the title? Reporters, fans and pundits make their predictions</div></div>
-  <div class="tldr-grid"><div class="tldr-item"><strong>Sinner:</strong> Flashback: Sinner's first ATP Tour win & the impression he left... not just on c</div><div class="tldr-item"><strong>Good News:</strong> What went right this week: the good news that matters</div><div class="tldr-item"><strong>+</strong> Key suspect in notorious Tadamon massacre during Syria civil war arrested</div><div class="tldr-item"><strong>+</strong> The surprise pushback against America’s junk food culture</div></div>
+  <div class="tldr-grid"><div class="tldr-item"><strong>Wien 23°</strong> Klar — Kein Regen erwartet — Jacke + Schirm daheim lassen.</div><div class="tldr-item"><strong>Welt:</strong> Nato says 'no provision' to expel members after report US could seek to suspend </div><div class="tldr-item"><strong>+</strong> No 10 says Falklands sovereignty rests with UK after report of US 'review'</div><div class="tldr-item"><strong>Sinner:</strong> Flashback: Sinner's first ATP Tour win & the impression he left... not just on c</div></div>
+  <div class="tldr-grid"><div class="tldr-item"><strong>Good News:</strong> What went right this week: the good news that matters</div><div class="tldr-item"><strong>+</strong> Key suspect in notorious Tadamon massacre during Syria civil war arrested</div><div class="tldr-item"><strong>+</strong> The surprise pushback against America’s junk food culture</div></div>
 </div>
 
 <main class="main">
@@ -112,7 +120,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
           <div class="news-title">Nato says &#x27;no provision&#x27; to expel members after report US could seek to suspend Spain</div>
           <div class="news-meta">
             <span class="news-source">BBC World</span>
-            <span>vor 3h</span>
+            <span>vor 4h</span>
           </div>
           <div class='news-desc'>An internal Pentagon email reportedly outlines options to punish allies over a perceived lack of support for Iran war.</div>
         </div>
@@ -145,7 +153,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
           <div class="news-title">Behind Nigeria&#x27;s murky coup plot - the money, the prayers and a Nollywood arrest</div>
           <div class="news-meta">
             <span class="news-source">BBC World</span>
-            <span>vor 10 min</span>
+            <span>vor 17 min</span>
           </div>
           <div class='news-desc'>What court papers and sources close to the investigation have told the BBC about the scope of the plan.</div>
         </div>
@@ -186,22 +194,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
         <span class="card-label arsenal">⚽ Arsenal London</span>
         <span class="card-more">BBC Sport</span>
       </div>
-      
-      <div class="match-block">
-        <div class="match-comp">Arsenal</div>
-        <div class="news-title" style="padding:0;font-size:14px">Who will win the title? Reporters, fans and pundits make their predictions</div>
-        <div class='match-note'>Will it be Manchester City or Arsenal for the Premier League title? BBC Sport gets pundits, reporters and fans to predic</div>
-      </div>
-      <div class="match-block">
-        <div class="match-comp">Arsenal</div>
-        <div class="news-title" style="padding:0;font-size:14px">🎧 Arsenal Daily: Do Arsenal need a mindset change?</div>
-        <div class='match-note'>Today&#x27;s news and views on the Gunners in two minutes.</div>
-      </div>
-      <div class="match-block">
-        <div class="match-comp">Arsenal</div>
-        <div class="news-title" style="padding:0;font-size:14px">&#x27;Arsenal have been trying to nick 1-0 wins&#x27; - do they need mindset change?</div>
-        <div class='match-note'>Arsenal and Manchester City are locked on points and goal difference heading into the final five games of the Premier Le</div>
-      </div>
+      <div class="empty">Keine Spieldaten verfügbar</div>
     </div>
     <div class="card">
       <div class="card-header">
@@ -220,15 +213,15 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
           <div class='news-desc'>Der Anwalt der ORF-Stiftungsratsspitzen, Roland Gerlach, sieht grundsätzlich Argumente für eine Trennung auch bei jener Mitarbeiterin, die den Ex-General belastet. ORF-Generaldirektorin Ingrid Thurnhe…</div>
         </div>
       </a>
-      <a class="news-item" href="https://www.derstandard.at/story/3000000317881/flug-fuer-jan-marsaleks-flucht-arrangiert-freispruch-fuer-ex-fpoe-politiker?ref=rss" target="_blank" rel="noopener">
+      <a class="news-item" href="https://www.derstandard.at/story/3000000318083/oh-rf-oesterreichs-kranker-rundfunk?ref=rss" target="_blank" rel="noopener">
         <div class="news-num">02</div>
         <div>
-          <div class="news-title">Flug für Jan Marsaleks Flucht arrangiert: Freispruch für Ex-FPÖ-Politiker</div>
+          <div class="news-title">Oh, RF! Österreichs kranker Rundfunk</div>
           <div class="news-meta">
             <span class="news-source">Der Standard</span>
-            <span>vor 1h</span>
+            <span>vor 1 min</span>
           </div>
-          <div class='news-desc'>Das Gericht sah nicht als erwiesen an, dass Thomas Schellenbacher von Straftaten des Ex-Wirecard-Managers Jan Marsalek wusste. Die Staatsanwaltschaft beruft.</div>
+          <div class='news-desc'>Am Küniglberg ist nicht nur ein Generaldirektor, sondern ein System gescheitert</div>
         </div>
       </a>
       <a class="news-item" href="https://www.derstandard.at/jetzt/livebericht/3000000317686/finale-im-woeginger-prozess-wksta-und-anwaelte-halten-schlussplaedoyers?ref=rss" target="_blank" rel="noopener">
@@ -237,7 +230,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
           <div class="news-title">&quot;Bürgeranliegen&quot;: Anwalt sagt, Wöginger habe Schmid nie zu Verbotenem aufgefordert</div>
           <div class="news-meta">
             <span class="news-source">Der Standard</span>
-            <span>vor 8h</span>
+            <span>vor 9h</span>
           </div>
           <div class='news-desc'>Zwei Vertreter der Korruptionsstaatsanwaltschaft und drei Verteidiger wollen von Schuld oder Unschuld der Angeklagten überzeugen. DER STANDARD berichtet live</div>
         </div>
@@ -278,7 +271,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
         <div>
           <div class="temp-hero">23°</div>
           <div class="weather-cond">Klar</div>
-          <div class="weather-hilo">↑23° ↓10° · 14 km/h · 16%</div>
+          <div class="weather-hilo">↑23° ↓10° · 14 km/h · 18%</div>
         </div>
         <div class="weather-icon">☀️</div>
       </div>
@@ -297,7 +290,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
           <div class="news-num">→</div>
           <div>
             <div class="news-title" style="font-size:13px">Flashback: Sinner&#x27;s first ATP Tour win &amp; the impression he left... not just on court - ATP Tour</div>
-            <div class="news-meta"><span class="news-source">Google News</span> <span>vor 8h</span></div>
+            <div class="news-meta"><span class="news-source">Google News</span> <span>vor 9h</span></div>
           </div>
         </a><a class="news-item" href="https://news.google.com/rss/articles/CBMikwFBVV95cUxQWWdqLU4zakVlNUpfR2lqOGp2dkYzZjNjd2VLUEN0YmU4cWJyUHhVVElERS1nbm1fempPbUFTZm9KT2dIdHlWc283QWhIV0g5SzIzdFFLc2wyd1JISnZUd0VaWk5aWm5EbHpFUEFSb29heE51bWU0eTA2LUNrUmJlNF9uZTk5bnYyNDdhRlFUTHg0STA?oc=5" target="_blank" rel="noopener">
           <div class="news-num">→</div>
@@ -311,11 +304,11 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
             <div class="news-title" style="font-size:13px">Why Del Potro &#x27;can&#x27;t compare&#x27; Alcaraz &amp; Sinner to Djokovic, Nadal, Federer - Exclusive - Tennis365</div>
             <div class="news-meta"><span class="news-source">Google News</span> <span>vor 19h</span></div>
           </div>
-        </a><a class="news-item" href="https://news.google.com/rss/articles/CBMizAFBVV95cUxQU3B2T2d2SmFjS1VVdGJlVTRlVmJ6ZjEzWFhUdkozUFdQbmtqck1NY0kxTkk1UlFaNEF5bTdReXIwVnd0X0QzRnJ1RUVYWkstME5wb3FLSzUyOVZUcmJXTHViZkVDOXpwZjlyZlBoTjlCN0J1Q2FBaUNMVjBQLWFnT3Z1cE8zbVdjbl9RZ0ZzdlZUTnNHeEY3akRZdnJGbTZhcEN3eTNHV2QxSFhxM25FdXFfMjdfSGVXbDF2ZXNUSXZPbTdpM1lYTjR4Z0w?oc=5" target="_blank" rel="noopener">
+        </a><a class="news-item" href="https://news.google.com/rss/articles/CBMinAFBVV95cUxQX2k1UzdYM1pTcHRQYVdyQVZQOFBXeG1lNTREUUdUVHRHb2o0UmxpYTJZdFE5djhqZVByRXhoU0F2VC1MUkR1SkhObk5uZlBoUktPUTFJRjd2OC1aOWlJUFM0RmpKRTAwb25VWXotZnhkYmhzWmtMbnRaVXR1TGljTzFST0J3VVpqX1ZsU0tWN0V6SHRLQ3hwaU9UQWE?oc=5" target="_blank" rel="noopener">
           <div class="news-num">→</div>
           <div>
-            <div class="news-title" style="font-size:13px">Depression candy and death stares: inside the secret world of the tennis locker room - The Guardian</div>
-            <div class="news-meta"><span class="news-source">Google News</span> <span>22. Apr</span></div>
+            <div class="news-title" style="font-size:13px">Why are Nadal and Sinner playing tennis against Bellingham at the Bernabeu? - Tennis365</div>
+            <div class="news-meta"><span class="news-source">Google News</span> <span>vor 14h</span></div>
           </div>
         </a>
       <div class="card-header" style="border-top:1px solid var(--line);border-bottom:none;margin-top:4px">
@@ -339,13 +332,13 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font
       </div>
       <div class="fact-body">
         <div class="fact-eyebrow">Did you know</div>
-        <div class="fact-text">Virginia Woolf wrote all her books standing.</div>
+        <div class="fact-text">A Boeing 747s wingspan is longer than the Wright brother&#x27;s first flight.</div>
       </div>
     </div>
   </div>
 
   <div class="refresh-note">
-    <span>Generiert: Freitag, 24. April 2026 · 16:07 Uhr · Open-Meteo, BBC, Guardian, arseblog, ATP, Positive.news</span>
+    <span>Generiert: Freitag, 24. April 2026 · 16:15 Uhr · Open-Meteo, BBC, Guardian, arseblog, ATP, Positive.news</span>
     <span>Aktualisiert täglich automatisch um 7:00 Uhr</span>
   </div>
 </main>
